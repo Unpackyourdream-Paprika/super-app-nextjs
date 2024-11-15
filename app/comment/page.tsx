@@ -363,7 +363,9 @@ export default function Comments() {
           </div>
         ))}
         {comments.length === 0 && (
-          <p className="text-center text-gray-500">아직 댓글이 없습니다.</p>
+          <p className="text-center text-gray-500">
+            {/* 아직 댓글이 없습니다. */}
+          </p>
         )}
       </div>
     );
