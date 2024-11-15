@@ -1,7 +1,7 @@
 // app/comments/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Comment {
   id: number;
@@ -16,17 +16,15 @@ interface ContentInfo {
 }
 
 export default function Comments() {
+  // refs
+  const formRef = useRef<HTMLFormElement>(null);
+
   // 상태 관리
   const [content, setContent] = useState<ContentInfo>({
     name: null,
     episode: null,
   });
   const [comments, setComments] = useState<Comment[]>([]);
-  const [formData, setFormData] = useState({
-    userid: "",
-    password: "",
-    comment_content: "",
-  });
   const [isLoading, setIsLoading] = useState(true);
 
   // URL 파라미터 가져오기
@@ -67,18 +65,24 @@ export default function Comments() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // FormData를 사용하여 폼 데이터 수집
+    const formData = new FormData(e.target as HTMLFormElement);
+    const submitData = {
+      userid: formData.get("userid"),
+      password: formData.get("password"),
+      comment_content: formData.get("comment_content"),
+      comment_status: true,
+      content_name: content.name,
+      content_episode: Number(content.episode),
+    };
+
     try {
       const response = await fetch("/api/public_post", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          ...formData,
-          comment_status: true,
-          content_name: content.name,
-          content_episode: Number(content.episode),
-        }),
+        body: JSON.stringify(submitData),
       });
 
       if (!response.ok) {
@@ -86,7 +90,10 @@ export default function Comments() {
         throw new Error(errorData.error || "댓글 작성 실패");
       }
 
-      setFormData({ userid: "", password: "", comment_content: "" });
+      // 폼 초기화
+      formRef.current?.reset();
+
+      // 댓글 목록 새로고침
       fetchComments();
       alert("댓글이 등록되었습니다!");
     } catch (error) {
@@ -99,7 +106,6 @@ export default function Comments() {
     }
   };
 
-  // 로딩 상태 표시
   if (isLoading) {
     return (
       <div className="max-w-2xl mx-auto p-4">
@@ -108,7 +114,6 @@ export default function Comments() {
     );
   }
 
-  // 컨텐츠 정보가 없는 경우
   if (!content.name || !content.episode) {
     return (
       <div className="max-w-2xl mx-auto p-4">
@@ -121,6 +126,7 @@ export default function Comments() {
 
   const CommentForm = () => (
     <form
+      ref={formRef}
       onSubmit={handleSubmit}
       className="mb-8 bg-white rounded-lg shadow p-4"
     >
@@ -132,11 +138,8 @@ export default function Comments() {
           <input
             type="text"
             id="userid"
-            value={formData.userid}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, userid: e.target.value }))
-            }
-            className="w-full px-3 py-2 border rounded-md"
+            name="userid"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
@@ -147,30 +150,24 @@ export default function Comments() {
           <input
             type="password"
             id="password"
-            value={formData.password}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, password: e.target.value }))
-            }
-            className="w-full px-3 py-2 border rounded-md"
+            name="password"
+            className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
         </div>
       </div>
 
       <div className="mb-4">
-        <label htmlFor="comment" className="block text-sm font-medium mb-1">
+        <label
+          htmlFor="comment_content"
+          className="block text-sm font-medium mb-1"
+        >
           댓글 내용
         </label>
         <textarea
-          id="comment"
-          value={formData.comment_content}
-          onChange={(e) =>
-            setFormData((prev) => ({
-              ...prev,
-              comment_content: e.target.value,
-            }))
-          }
-          className="w-full px-3 py-2 border rounded-md"
+          id="comment_content"
+          name="comment_content"
+          className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={4}
           required
         />
