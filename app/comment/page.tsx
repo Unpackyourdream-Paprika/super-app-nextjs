@@ -137,11 +137,14 @@ export default function Comments() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="mb-8 bg-white rounded-lg shadow p-4"
+      className="mb-8  rounded-lg shadow p-4 "
     >
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
-          <label htmlFor="userid" className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="userid"
+            className="block text-sm font-medium mb-1 text-[#bdbdbd]"
+          >
             ID
           </label>
           <input
@@ -154,7 +157,10 @@ export default function Comments() {
           />
         </div>
         <div className="flex-1">
-          <label htmlFor="password" className="block text-sm font-medium mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium mb-1 text-[#bdbdbd]"
+          >
             Password
           </label>
           <input
@@ -266,7 +272,7 @@ export default function Comments() {
     };
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 p-4">
         {comments.map((comment) => (
           <div key={comment.id} className="bg-white rounded-lg shadow p-4">
             <div className="flex justify-between items-center mb-2">
