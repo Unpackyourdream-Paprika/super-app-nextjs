@@ -13,10 +13,19 @@ export async function POST(req: NextRequest) {
       comment_content,
     } = body;
 
-    // 데이터 유효성 검사 추가
+    // 데이터 유효성 검사 강화
     if (!userid || !password || !content_name || !content_episode) {
       return NextResponse.json(
         { error: "Required fields are missing" },
+        { status: 400 }
+      );
+    }
+
+    // content_name과 content_episode 타입 검사 및 변환
+    const parsedEpisode = Number(content_episode);
+    if (isNaN(parsedEpisode)) {
+      return NextResponse.json(
+        { error: "Invalid episode number" },
         { status: 400 }
       );
     }
@@ -29,7 +38,7 @@ export async function POST(req: NextRequest) {
           password,
           comment_status,
           content_name,
-          content_episode,
+          content_episode: parsedEpisode, // 숫자로 변환된 값 사용
           comment_content,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
