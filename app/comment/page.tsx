@@ -370,7 +370,7 @@ export default function Comments() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <div className="w-full mx-auto p-4">
       <CommentForm />
       <CommentList />
     </div>
