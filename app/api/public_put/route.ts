@@ -3,40 +3,35 @@ import { supabaseServer } from "../../../lib/supabaseServer";
 
 export async function PUT(req: NextRequest) {
   try {
-    const body = await req.json();
-    const {
-      id,
-      userid,
-      password,
-      comment_status,
-      content_name,
-      content_episode,
-    } = body;
+    const { id, password, comment_content } = await req.json();
 
-    if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    // 비밀번호 확인
+    const { data: comment } = await supabaseServer
+      .from("public_table")
+      .select("*")
+      .eq("id", id)
+      .eq("password", password)
+      .single();
+
+    if (!comment) {
+      return NextResponse.json(
+        { error: "비밀번호가 일치하지 않습니다." },
+        { status: 401 }
+      );
     }
 
-    const { data, error } = await supabaseServer
+    // 댓글 수정
+    const { error } = await supabaseServer
       .from("public_table")
       .update({
-        userid,
-        password,
-        comment_status,
-        content_name,
-        content_episode,
-        updated_at: new Date(),
+        comment_content,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", id);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    return NextResponse.json(
-      { message: "Data updated successfully", data },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: "수정되었습니다." }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }

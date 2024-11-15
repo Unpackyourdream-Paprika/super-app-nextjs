@@ -1,7 +1,13 @@
 // app/comments/page.tsx
 "use client";
 
+import { Edit2, Trash2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+
+interface EditingComment {
+  id: number | null;
+  mode: "edit" | "delete" | null;
+}
 
 interface Comment {
   id: number;
@@ -26,6 +32,13 @@ export default function Comments() {
   });
   const [comments, setComments] = useState<Comment[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [editingComment, setEditingComment] = useState<EditingComment>({
+    id: null,
+    mode: null,
+  });
+  const [editContent, setEditContent] = useState("");
+  const [password, setPassword] = useState("");
 
   // URL 파라미터 가져오기
   useEffect(() => {
@@ -95,14 +108,10 @@ export default function Comments() {
 
       // 댓글 목록 새로고침
       fetchComments();
-      alert("댓글이 등록되었습니다!");
+      alert("comment complete!");
     } catch (error) {
       console.error("Error:", error);
-      alert(
-        error instanceof Error
-          ? error.message
-          : "댓글 작성 중 오류가 발생했습니다."
-      );
+      alert(error instanceof Error ? error.message : "comment error");
     }
   };
 
@@ -118,7 +127,7 @@ export default function Comments() {
     return (
       <div className="max-w-2xl mx-auto p-4">
         <p className="text-center text-red-500">
-          잘못된 접근입니다. 컨텐츠 정보가 필요합니다.
+          This is the wrong approach. Content information is required.
         </p>
       </div>
     );
@@ -133,7 +142,7 @@ export default function Comments() {
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
           <label htmlFor="userid" className="block text-sm font-medium mb-1">
-            아이디
+            ID
           </label>
           <input
             type="text"
@@ -141,11 +150,12 @@ export default function Comments() {
             name="userid"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
+            placeholder="id"
           />
         </div>
         <div className="flex-1">
           <label htmlFor="password" className="block text-sm font-medium mb-1">
-            비밀번호
+            Password
           </label>
           <input
             type="password"
@@ -153,6 +163,7 @@ export default function Comments() {
             name="password"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
+            placeholder="Password"
           />
         </div>
       </div>
@@ -162,7 +173,7 @@ export default function Comments() {
           htmlFor="comment_content"
           className="block text-sm font-medium mb-1"
         >
-          댓글 내용
+          Comment Content
         </label>
         <textarea
           id="comment_content"
@@ -170,6 +181,7 @@ export default function Comments() {
           className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={4}
           required
+          placeholder="Comment Content"
         />
       </div>
 
@@ -177,31 +189,185 @@ export default function Comments() {
         type="submit"
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
       >
-        댓글 작성
+        Submit
       </button>
     </form>
   );
 
-  const CommentList = () => (
-    <div className="space-y-4">
-      {comments.map((comment) => (
-        <div key={comment.id} className="bg-white rounded-lg shadow p-4">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-medium">{comment.userid}</span>
-            <span className="text-sm text-gray-500">
-              {new Date(comment.created_at).toLocaleDateString()}
-            </span>
+  const CommentList = () => {
+    const editFormRef = useRef<HTMLFormElement>(null);
+    const deleteFormRef = useRef<HTMLFormElement>(null);
+
+    const handleEdit = async (id: number, event: React.FormEvent) => {
+      event.preventDefault();
+      const form = event.target as HTMLFormElement;
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/api/public_put", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            password: formData.get("password"),
+            comment_content: formData.get("comment_content"),
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "editing error");
+        }
+
+        setEditingComment({ id: null, mode: null });
+        fetchComments();
+        alert("Edit success");
+      } catch (error) {
+        alert(error instanceof Error ? error.message : "editing error");
+      }
+    };
+
+    const handleDelete = async (id: number, event: React.FormEvent) => {
+      event.preventDefault();
+      if (!confirm("Are you sure? Delete?")) return;
+
+      const form = event.target as HTMLFormElement;
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch("/api/public_delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id,
+            password: formData.get("password"),
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || "Delete fail");
+        }
+
+        setEditingComment({ id: null, mode: null });
+        fetchComments();
+        alert("Delete!");
+      } catch (error) {
+        alert(
+          error instanceof Error
+            ? error.message
+            : "삭제 중 오류가 발생했습니다."
+        );
+      }
+    };
+
+    return (
+      <div className="space-y-4">
+        {comments.map((comment) => (
+          <div key={comment.id} className="bg-white rounded-lg shadow p-4">
+            <div className="flex justify-between items-center mb-2">
+              <span className="font-medium">{comment.userid}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-500">
+                  {new Date(comment.created_at).toLocaleDateString()}
+                </span>
+                <button
+                  onClick={() =>
+                    setEditingComment({ id: comment.id, mode: "edit" })
+                  }
+                  className="text-blue-500 hover:text-blue-600 p-1 rounded-full hover:bg-blue-50"
+                  aria-label="수정"
+                >
+                  <Edit2 size={16} />
+                </button>
+                <button
+                  onClick={() =>
+                    setEditingComment({ id: comment.id, mode: "delete" })
+                  }
+                  className="text-sm text-red-500 hover:text-red-600"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+
+            {editingComment.id === comment.id &&
+            editingComment.mode === "edit" ? (
+              <form
+                onSubmit={(e) => handleEdit(comment.id, e)}
+                className="mt-2"
+              >
+                <textarea
+                  name="comment_content"
+                  defaultValue={comment.comment_content}
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+                <div className="mt-2 flex gap-2">
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password Check"
+                    className="flex-1 px-3 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                  >
+                    OK
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setEditingComment({ id: null, mode: null })}
+                    className="px-4 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                  >
+                    CANCEL
+                  </button>
+                </div>
+              </form>
+            ) : editingComment.id === comment.id &&
+              editingComment.mode === "delete" ? (
+              <form
+                onSubmit={(e) => handleDelete(comment.id, e)}
+                className="mt-2 flex gap-2"
+              >
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="비밀번호 확인"
+                  className="flex-1 px-3 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  type="submit"
+                  className="px-4 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  OK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingComment({ id: null, mode: null })}
+                  className="px-4 py-1 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+                >
+                  CANCEL
+                </button>
+              </form>
+            ) : (
+              <p className="text-gray-700 whitespace-pre-wrap">
+                {comment.comment_content}
+              </p>
+            )}
           </div>
-          <p className="text-gray-700 whitespace-pre-wrap">
-            {comment.comment_content}
-          </p>
-        </div>
-      ))}
-      {comments.length === 0 && (
-        <p className="text-center text-gray-500">아직 댓글이 없습니다.</p>
-      )}
-    </div>
-  );
+        ))}
+        {comments.length === 0 && (
+          <p className="text-center text-gray-500">아직 댓글이 없습니다.</p>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="max-w-2xl mx-auto p-4">

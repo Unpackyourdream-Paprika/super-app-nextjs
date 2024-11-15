@@ -16,6 +16,7 @@ export async function GET(req: NextRequest) {
       .select("*")
       .eq("content_name", content_name)
       .eq("content_episode", content_episode)
+      .eq("comment_status", true)
       .order("created_at", { ascending: false });
 
     if (error) {
