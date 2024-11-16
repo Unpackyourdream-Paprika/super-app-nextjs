@@ -108,7 +108,7 @@ export default function Comments() {
 
       // 댓글 목록 새로고침
       fetchComments();
-      alert("comment complete!");
+      // alert("comment complete!");
     } catch (error) {
       console.error("Error:", error);
       alert(error instanceof Error ? error.message : "comment error");
@@ -177,7 +177,7 @@ export default function Comments() {
       <div className="mb-4">
         <label
           htmlFor="comment_content"
-          className="block text-sm font-medium mb-1"
+          className="block text-sm font-medium mb-1 text-[#bdbdbd]"
         >
           Comment Content
         </label>
@@ -193,7 +193,7 @@ export default function Comments() {
 
       <button
         type="submit"
-        className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition-colors"
+        className="w-full bg-white text-black py-2 px-4 rounded-md opacity-100 hover:opacity-80 transition-opacity"
       >
         Submit
       </button>
@@ -274,9 +274,11 @@ export default function Comments() {
     return (
       <div className="space-y-4 p-4">
         {comments.map((comment) => (
-          <div key={comment.id} className="bg-white rounded-lg shadow p-4">
+          <div key={comment.id} className="bg-[#191919] rounded-lg shadow p-4">
             <div className="flex justify-between items-center mb-2">
-              <span className="font-medium">{comment.userid}</span>
+              <span className="font-medium text-[#bdbdbd]">
+                {comment.userid}
+              </span>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-500">
                   {new Date(comment.created_at).toLocaleDateString()}
@@ -322,7 +324,7 @@ export default function Comments() {
                   />
                   <button
                     type="submit"
-                    className="px-4 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                    className="px-4 py-1 bg-white text-black rounded-md opacity-100 hover:opacity-80 transition-opacity"
                   >
                     OK
                   </button>
@@ -362,7 +364,7 @@ export default function Comments() {
                 </button>
               </form>
             ) : (
-              <p className="text-gray-700 whitespace-pre-wrap">
+              <p className="text-white whitespace-pre-wrap">
                 {comment.comment_content}
               </p>
             )}

@@ -23,6 +23,9 @@ export async function POST(req: NextRequest) {
 
     // content_name과 content_episode 타입 검사 및 변환
     const parsedEpisode = Number(content_episode);
+
+    console.log(parsedEpisode, "parsedEpisode??");
+
     if (isNaN(parsedEpisode)) {
       return NextResponse.json(
         { error: "Invalid episode number" },
