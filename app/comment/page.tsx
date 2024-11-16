@@ -346,7 +346,7 @@ export default function Comments() {
                 <input
                   type="password"
                   name="password"
-                  placeholder="비밀번호 확인"
+                  placeholder="Password Check"
                   className="flex-1 px-3 py-1 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
