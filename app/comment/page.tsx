@@ -195,7 +195,7 @@ export default function Comments() {
         type="submit"
         className="w-full bg-white text-black py-2 px-4 rounded-md opacity-100 hover:opacity-80 transition-opacity"
       >
-        📤✅
+        📤✅1
       </button>
     </form>
   );
