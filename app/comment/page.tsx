@@ -153,7 +153,7 @@ export default function Comments() {
             name="userid"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-            placeholder="id"
+            placeholder="Captain Muffin 🧁"
           />
         </div>
         <div className="flex-1">
@@ -169,7 +169,7 @@ export default function Comments() {
             name="password"
             className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
-            placeholder="Password"
+            placeholder="Whisper your password… 🤫🔒"
           />
         </div>
       </div>
@@ -187,7 +187,7 @@ export default function Comments() {
           className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           rows={4}
           required
-          placeholder="Comment Content"
+          placeholder="Make some noise! (Or just type softly 🎸🖋️)"
         />
       </div>
 
@@ -195,7 +195,7 @@ export default function Comments() {
         type="submit"
         className="w-full bg-white text-black py-2 px-4 rounded-md opacity-100 hover:opacity-80 transition-opacity"
       >
-        📤✅1
+        📤✅
       </button>
     </form>
   );
