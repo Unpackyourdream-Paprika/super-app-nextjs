@@ -145,7 +145,7 @@ export default function Comments() {
             htmlFor="userid"
             className="block text-sm font-medium mb-1 text-[#bdbdbd]"
           >
-            ID
+            🆔➡️📩
           </label>
           <input
             type="text"
@@ -161,7 +161,7 @@ export default function Comments() {
             htmlFor="password"
             className="block text-sm font-medium mb-1 text-[#bdbdbd]"
           >
-            Password
+            🔑➡️📩
           </label>
           <input
             type="password"
@@ -179,7 +179,7 @@ export default function Comments() {
           htmlFor="comment_content"
           className="block text-sm font-medium mb-1 text-[#bdbdbd]"
         >
-          Comment Content
+          💬✍️📜
         </label>
         <textarea
           id="comment_content"
@@ -195,7 +195,7 @@ export default function Comments() {
         type="submit"
         className="w-full bg-white text-black py-2 px-4 rounded-md opacity-100 hover:opacity-80 transition-opacity"
       >
-        Submit
+        📤✅
       </button>
     </form>
   );
