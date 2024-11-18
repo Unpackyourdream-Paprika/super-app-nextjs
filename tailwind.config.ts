@@ -72,6 +72,9 @@ const config = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      fontFamily: {
+        sans: ['"Noto Sans JP"', "sans-serif"], // 기본 sans 폰트로 Noto Sans JP 설정
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
